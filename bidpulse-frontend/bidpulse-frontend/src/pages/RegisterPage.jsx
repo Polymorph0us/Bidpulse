@@ -6,6 +6,7 @@ export default function RegisterPage() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [role, setRole] = useState('USER');
   const [status, setStatus] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
@@ -16,7 +17,7 @@ export default function RegisterPage() {
     setStatus('');
     
     try {
-      await apiClient.post('/users', { name, email, password });
+      await apiClient.post('/users', { name, email, password, role });
       setStatus('✅ Identity verified! Redirecting to secure login...');
       
       setTimeout(() => {
@@ -91,6 +92,20 @@ export default function RegisterPage() {
               required 
               className="input-field"
             />
+          </div>
+
+          <div>
+            <label htmlFor="role" className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Account Type</label>
+            <select 
+              id="role"
+              name="role"
+              value={role}
+              onChange={(e) => setRole(e.target.value)}
+              className="input-field appearance-none bg-darkBg text-white focus:outline-none focus:ring-2 focus:ring-neonCyan"
+            >
+              <option value="USER">Buyer (Operative)</option>
+              <option value="SELLER">Seller (Vendor)</option>
+            </select>
           </div>
           
           <button type="submit" className="w-full btn-primary" disabled={isLoading}>
