@@ -18,7 +18,7 @@ export default function LandingPage() {
                     <div className="w-10 h-10 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-xl flex items-center justify-center text-xl font-black shadow-[0_0_20px_rgba(6,182,212,0.4)]">
                         B
                     </div>
-                    <span className="text-2xl font-black tracking-tighter uppercase">BidPulse</span>
+                    <span className="text-2xl font-black tracking-tighter uppercase font-display">BidPulse</span>
                 </div>
                 <div className="flex items-center gap-6">
                     <Link to="/login" className="text-sm font-bold text-gray-400 hover:text-white transition-colors uppercase tracking-widest">Login</Link>
@@ -41,7 +41,7 @@ export default function LandingPage() {
                     <span className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-400">Live Infrastructure Online</span>
                 </div>
 
-                <h1 className="text-6xl md:text-8xl font-black tracking-tighter mb-8 leading-[0.9]">
+                <h1 className="text-6xl md:text-8xl font-black tracking-tighter mb-8 leading-[0.9] font-display">
                     THE FUTURE OF <br />
                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600">
                         ELITE BIDDING
@@ -72,15 +72,15 @@ export default function LandingPage() {
                 {/* Grid Preview / Stats */}
                 <div className="mt-32 grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-5xl">
                     <div className="glass-card p-8 border-t-2 border-t-neonCyan">
-                        <div className="text-3xl font-black text-white mb-2">99.9%</div>
+                        <div className="text-3xl font-black text-white mb-2 font-display">99.9%</div>
                         <div className="text-xs font-bold text-gray-500 uppercase tracking-widest">Uptime Guaranteed</div>
                     </div>
                     <div className="glass-card p-8 border-t-2 border-t-neonPurple">
-                        <div className="text-3xl font-black text-white mb-2">$2.4M+</div>
+                        <div className="text-3xl font-black text-white mb-2 font-display">$2.4M+</div>
                         <div className="text-xs font-bold text-gray-500 uppercase tracking-widest">Total Trade Vol</div>
                     </div>
                     <div className="glass-card p-8 border-t-2 border-t-emerald-500">
-                        <div className="text-3xl font-black text-white mb-2">15ms</div>
+                        <div className="text-3xl font-black text-white mb-2 font-display">15ms</div>
                         <div className="text-xs font-bold text-gray-500 uppercase tracking-widest">Latency Threshold</div>
                     </div>
                 </div>

@@ -4,8 +4,8 @@ import apiClient from '../api/axiosConfig';
 import { useAuth } from '../context/AuthContext';
 
 export default function LoginPage() {
-  const [email, setEmail] = useState('seller@test.com');
-  const [password, setPassword] = useState('password123');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   
@@ -36,58 +36,84 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#F3F4F6] px-4">
-      <div className="max-w-md w-full bg-white rounded-card shadow-soft p-8 border border-gray-100">
-        <div className="text-center mb-8">
-          <div className="w-12 h-12 bg-primary text-white rounded-lg mx-auto flex items-center justify-center text-xl font-black mb-4">B</div>
-          <h1 className="text-2xl font-bold text-[#0F1724]">Sign in to BidPulse</h1>
-          <p className="text-[#4B5563] text-sm mt-2">Enter your details to access your dashboard.</p>
-        </div>
-        
-        {error && (
-          <div className="mb-6 p-3 bg-red-50 border border-red-100 text-[#E53E3E] text-sm rounded-btn" role="alert">
-            {error}
-          </div>
-        )}
+    <div className="min-h-screen flex items-center justify-center px-4 relative">
+      {/* Decorative background glows */}
+      <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-neonPurple/10 rounded-full blur-[100px] pointer-events-none"></div>
+      <div className="absolute bottom-1/4 left-1/4 w-96 h-96 bg-neonCyan/10 rounded-full blur-[100px] pointer-events-none"></div>
 
-        <form onSubmit={handleLogin} className="space-y-5">
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-[#0F1724] mb-1">Email address</label>
-            <input 
-              id="email" 
-              type="email" 
-              required 
-              className="input-field" 
-              value={email} 
-              onChange={(e) => setEmail(e.target.value)} 
-            />
-          </div>
-          <div>
-            <div className="flex justify-between items-center mb-1">
-              <label htmlFor="password" className="block text-sm font-medium text-[#0F1724]">Password</label>
+      <div className="max-w-md w-full relative z-10">
+        <Link 
+          to="/" 
+          className="inline-flex items-center text-sm font-bold text-gray-400 hover:text-white transition-colors mb-8 group"
+        >
+          <span className="mr-2 transition-transform group-hover:-translate-x-1">←</span>
+          BACK TO LANDING
+        </Link>
+
+        <div className="glass-card p-8 border-t-4 border-t-neonPurple">
+          <div className="text-center mb-8">
+            <div className="w-12 h-12 bg-gradient-to-br from-violet-500 to-purple-600 text-white rounded-xl mx-auto flex items-center justify-center text-xl font-black mb-4 shadow-[0_0_15px_rgba(139,92,246,0.4)]">
+              B
             </div>
-            <input 
-              id="password" 
-              type="password" 
-              required 
-              className="input-field" 
-              value={password} 
-              onChange={(e) => setPassword(e.target.value)} 
-            />
+            <h1 className="text-3xl font-black text-white">Project <span className="text-gradient">Access</span></h1>
+            <p className="text-gray-400 text-sm mt-2">Enter your authorized credentials for terminal access.</p>
           </div>
           
-          <button 
-            type="submit" 
-            className="w-full btn-primary"
-            disabled={isLoading}
-          >
-            {isLoading ? 'Authenticating...' : 'Sign in'}
-          </button>
-        </form>
-        
-        <p className="mt-8 text-center text-sm text-[#4B5563]">
-          Don't have an account? <Link to="/register" className="text-primary hover:underline font-medium focus-visible:ring-2 rounded">Register here</Link>
-        </p>
+          {error && (
+            <div className="mb-6 p-4 bg-rose-500/20 border border-rose-500/30 text-rose-400 text-sm rounded-xl font-bold" role="alert">
+              {error}
+            </div>
+          )}
+
+          <form onSubmit={handleLogin} className="space-y-6">
+            <div>
+              <label htmlFor="email" className="label-cyber">Access Identity (Email)</label>
+              <input 
+                id="email" 
+                type="email" 
+                required 
+                className="input-field" 
+                placeholder="agent@bidpulse.com"
+                value={email} 
+                onChange={(e) => setEmail(e.target.value)} 
+              />
+            </div>
+            <div>
+              <label htmlFor="password" className="label-cyber">Secure Pass-Key</label>
+              <input 
+                id="password" 
+                type="password" 
+                required 
+                className="input-field" 
+                placeholder="••••••••"
+                value={password} 
+                onChange={(e) => setPassword(e.target.value)} 
+              />
+            </div>
+            
+            <div className="flex items-center justify-between">
+              <label className="flex items-center gap-2 cursor-pointer group">
+                <input type="checkbox" className="w-4 h-4 rounded border-white/10 bg-black/40 text-neonPurple focus:ring-neonPurple transition-all" />
+                <span className="text-xs font-medium text-gray-500 group-hover:text-gray-300 transition-colors">REMEMBER SESSION</span>
+              </label>
+              <button type="button" className="text-xs font-bold text-neonPurple hover:text-white transition-colors uppercase tracking-widest">RESET ACCESS</button>
+            </div>
+            
+            <button 
+              type="submit" 
+              className="w-full btn-primary"
+              disabled={isLoading}
+            >
+              {isLoading ? 'ESTABLISHING CONNECTION...' : 'INITIALIZE ACCESS'}
+            </button>
+          </form>
+          
+          <div className="mt-8 pt-8 border-t border-white/10 text-center">
+            <p className="text-sm text-gray-400">
+              New operative? <Link to="/register" className="text-neonPurple hover:text-white font-bold transition-colors">Register for identity</Link>
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   );
