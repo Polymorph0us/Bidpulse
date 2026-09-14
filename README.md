@@ -1,6 +1,6 @@
-﻿<div align="center">
+<div align="center">
 
-# âš¡ BidPulse
+# BidPulse
 
 ### A Full-Stack Real-Time Auction Platform
 
@@ -19,104 +19,111 @@
 
 ---
 
-## ðŸ“– Table of Contents
+## Table of Contents
 
-- [Overview](#-overview)
-- [Features](#-features)
-- [Architecture](#-architecture)
-- [Tech Stack](#-tech-stack)
-- [Getting Started](#-getting-started)
+- [Overview](#overview)
+- [Features](#features)
+- [Architecture](#architecture)
+- [Tech Stack](#tech-stack)
+- [Getting Started](#getting-started)
   - [Prerequisites](#prerequisites)
   - [Backend Setup](#backend-setup)
   - [Frontend Setup](#frontend-setup)
-- [Project Structure](#-project-structure)
-- [API Reference](#-api-reference)
-- [User Roles](#-user-roles)
-- [Real-Time Bidding Flow](#-real-time-bidding-flow)
-- [Database Schema](#-database-schema)
-- [Contributing](#-contributing)
+- [Project Structure](#project-structure)
+- [API Reference](#api-reference)
+- [User Roles](#user-roles)
+- [Real-Time Bidding Flow](#real-time-bidding-flow)
+- [Database Schema](#database-schema)
+- [Contributing](#contributing)
 
 ---
 
-## ðŸŽ¯ Overview
+## Overview
 
-**BidPulse** is a production-grade, full-stack real-time auction platform that enables users to create, browse, and participate in live auctions. Built with a modern microservice-ready architecture, BidPulse delivers sub-second bid updates via WebSocket connections, enforces role-based access control, and manages a full wallet/payment lifecycle â€” all wrapped in a sleek React-powered UI.
+**BidPulse** is a production-grade, full-stack real-time auction platform that enables users to create, browse, and participate in live auctions. Built with a modern microservice-ready architecture, BidPulse delivers sub-second bid updates via WebSocket connections, enforces role-based access control, and manages a full wallet/payment lifecycle -- all wrapped in a sleek React-powered UI.
 
 Whether you're a buyer chasing the thrill of a last-second win or a seller looking to maximize the value of your listings, BidPulse makes the experience fast, fair, and transparent.
 
 ---
 
-## âœ¨ Features
+## Features
 
-### ðŸ”´ Live & Real-Time
-- **WebSocket-Powered Bidding** â€” STOMP over SockJS for instant bid broadcasts to all participants in an auction room
-- **Live Countdown Timers** â€” Server-driven auction end times with live client-side countdown
-- **Real-Time Bid Feed** â€” Every new bid instantly appears for all connected bidders
+### Live and Real-Time
 
-### ðŸ” Security & Auth
-- **JWT Authentication** â€” Stateless access tokens with refresh token rotation
-- **Spring Security** â€” Route-level and method-level authorization
-- **WebSocket Auth Interceptor** â€” JWT validation on WebSocket handshake
-- **Role-Based Access Control** â€” `BUYER`, `SELLER`, and `ADMIN` roles with strict enforcement
+- **WebSocket-Powered Bidding** -- STOMP over SockJS for instant bid broadcasts to all participants in an auction room
+- **Live Countdown Timers** -- Server-driven auction end times with live client-side countdown
+- **Real-Time Bid Feed** -- Every new bid instantly appears for all connected bidders
 
-### ðŸ’¸ Wallet & Payments
-- **Integrated Wallet System** â€” Deposit, withdraw, and track your balance
-- **Bid Escrow** â€” Funds reserved on bid; released if outbid
-- **Payment Transaction History** â€” Full audit trail of all wallet movements
+### Security and Auth
 
-### ðŸ› Auction Management
-- **Full Auction Lifecycle** â€” `DRAFT â†’ ACTIVE â†’ ENDED` state machine
-- **Reserve Price** â€” Hidden minimum price sellers can configure
-- **Minimum Bid Increments** â€” Configurable per-auction to control bidding pace
-- **Image Support** â€” Base64-encoded auction item images stored with listings
-- **Optimistic Locking** â€” Concurrent bid protection via JPA `@Version`
+- **JWT Authentication** -- Stateless access tokens with refresh token rotation
+- **Spring Security** -- Route-level and method-level authorization
+- **WebSocket Auth Interceptor** -- JWT validation on WebSocket handshake
+- **Role-Based Access Control** -- `BUYER`, `SELLER`, and `ADMIN` roles with strict enforcement
 
-### ðŸ‘¤ User & Admin
-- **Seller Application System** â€” Users apply to become sellers; admins approve/reject
-- **Admin Dashboard** â€” Full platform oversight: users, auctions, applications
-- **Seller Dashboard** â€” Manage listings, track bids, monitor active auctions
-- **Notification System** â€” In-app notifications for bid events, application status, and wins
+### Wallet and Payments
 
-### ðŸ—„ Database & Ops
-- **Flyway Migrations** â€” Version-controlled schema evolution (no manual SQL)
-- **Docker Compose** â€” One command PostgreSQL environment
-- **SpringDoc OpenAPI** â€” Auto-generated Swagger UI at `/swagger-ui.html`
-- **Spring DevTools** â€” Hot reload during development
+- **Integrated Wallet System** -- Deposit, withdraw, and track your balance
+- **Bid Escrow** -- Funds reserved on bid; released if outbid
+- **Payment Transaction History** -- Full audit trail of all wallet movements
+
+### Auction Management
+
+- **Full Auction Lifecycle** -- `DRAFT -> ACTIVE -> ENDED` state machine
+- **Reserve Price** -- Hidden minimum price sellers can configure
+- **Minimum Bid Increments** -- Configurable per-auction to control bidding pace
+- **Image Support** -- Base64-encoded auction item images stored with listings
+- **Optimistic Locking** -- Concurrent bid protection via JPA `@Version`
+
+### User and Admin
+
+- **Seller Application System** -- Users apply to become sellers; admins approve/reject
+- **Admin Dashboard** -- Full platform oversight: users, auctions, applications
+- **Seller Dashboard** -- Manage listings, track bids, monitor active auctions
+- **Notification System** -- In-app notifications for bid events, application status, and wins
+
+### Database and Ops
+
+- **Flyway Migrations** -- Version-controlled schema evolution (no manual SQL)
+- **Docker Compose** -- One-command PostgreSQL environment
+- **SpringDoc OpenAPI** -- Auto-generated Swagger UI at `/swagger-ui.html`
+- **Spring DevTools** -- Hot reload during development
 
 ---
 
-## ðŸ— Architecture
+## Architecture
 
 ```
-â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
-â”‚                        BidPulse Platform                         â”‚
-â”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤
-â”‚      Frontend (React)     â”‚        Backend (Spring Boot)         â”‚
-â”‚  â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”   â”‚   â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”  â”‚
-â”‚  â”‚  React 19 + Vite   â”‚   â”‚   â”‚  Spring Boot 3.5 / Java 17   â”‚  â”‚
-â”‚  â”‚  React Router v7   â”‚â—„â”€â”€â”¼â”€â”€â–ºâ”‚  Spring Security + JWT       â”‚  â”‚
-â”‚  â”‚  TailwindCSS v4    â”‚   â”‚   â”‚  Spring Data JPA             â”‚  â”‚
-â”‚  â”‚  Axios (HTTP)      â”‚   â”‚   â”‚  SpringDoc OpenAPI           â”‚  â”‚
-â”‚  â”‚  STOMP/SockJS WS   â”‚â—„â”€â”€â”¼â”€â”€â–ºâ”‚  Spring WebSocket (STOMP)    â”‚  â”‚
-â”‚  â”‚  React Toastify    â”‚   â”‚   â”‚  Flyway Migrations           â”‚  â”‚
-â”‚  â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜   â”‚   â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜  â”‚
-â”‚                           â”‚                â”‚                      â”‚
-â”‚                           â”‚   â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â–¼â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”  â”‚
-â”‚                           â”‚   â”‚     PostgreSQL 15             â”‚  â”‚
-â”‚                           â”‚   â”‚   (Docker Compose)            â”‚  â”‚
-â”‚                           â”‚   â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜  â”‚
-â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”´â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
++------------------------------------------------------------------+
+|                        BidPulse Platform                         |
++---------------------------+--------------------------------------+
+|      Frontend (React)     |        Backend (Spring Boot)         |
+|  +--------------------+   |   +------------------------------+  |
+|  |  React 19 + Vite   |   |   |  Spring Boot 3.5 / Java 17  |  |
+|  |  React Router v7   |<--+-->|  Spring Security + JWT       |  |
+|  |  TailwindCSS v4    |   |   |  Spring Data JPA             |  |
+|  |  Axios (HTTP)      |   |   |  SpringDoc OpenAPI           |  |
+|  |  STOMP/SockJS WS   |<--+-->|  Spring WebSocket (STOMP)   |  |
+|  |  React Toastify    |   |   |  Flyway Migrations           |  |
+|  +--------------------+   |   +------------+-----------------+  |
+|                           |                |                     |
+|                           |   +------------v-----------------+  |
+|                           |   |     PostgreSQL 15            |  |
+|                           |   |   (Docker Compose)           |  |
+|                           |   +------------------------------+  |
++---------------------------+--------------------------------------+
 ```
 
 ### Key Design Decisions
-- **Stateless REST + Stateful WebSocket** â€” HTTP endpoints for CRUD operations; WebSocket for push events only
-- **Optimistic Locking on Bids** â€” Prevents race conditions when multiple users bid simultaneously
-- **Flyway for Schema Management** â€” Enables reproducible environments and safe production migrations
-- **Role-Based Route Guards** â€” `ProtectedRoute` component enforces role checks at the React router level
+
+- **Stateless REST + Stateful WebSocket** -- HTTP endpoints for CRUD; WebSocket for push events only
+- **Optimistic Locking on Bids** -- Prevents race conditions when multiple users bid simultaneously
+- **Flyway for Schema Management** -- Reproducible environments and safe production migrations
+- **Role-Based Route Guards** -- `ProtectedRoute` component enforces role checks at the React router level
 
 ---
 
-## ðŸ›  Tech Stack
+## Tech Stack
 
 | Layer | Technology | Version |
 |-------|-----------|---------|
@@ -130,17 +137,17 @@ Whether you're a buyer chasing the thrill of a last-second win or a seller looki
 | **Backend Framework** | Spring Boot | 3.5.10 |
 | **Language** | Java | 17 |
 | **Security** | Spring Security + JJWT | 0.11.5 |
-| **Database ORM** | Spring Data JPA (Hibernate) | â€” |
+| **Database ORM** | Spring Data JPA (Hibernate) | - |
 | **Database** | PostgreSQL | 15 |
-| **DB Migrations** | Flyway | â€” |
-| **Real-Time (Server)** | Spring WebSocket (STOMP) | â€” |
+| **DB Migrations** | Flyway | - |
+| **Real-Time (Server)** | Spring WebSocket (STOMP) | - |
 | **API Docs** | SpringDoc OpenAPI | 2.2.0 |
 | **Build Tool** | Maven | 3.x |
-| **DevOps** | Docker Compose | â€” |
+| **DevOps** | Docker Compose | - |
 
 ---
 
-## ðŸš€ Getting Started
+## Getting Started
 
 ### Prerequisites
 
@@ -152,25 +159,28 @@ Ensure you have the following installed:
 | Maven | 3.8+ | Included via `mvnw` wrapper |
 | Node.js | 20+ | [Download Node.js](https://nodejs.org/) |
 | Docker Desktop | Latest | For running PostgreSQL |
-| Git | Any | â€” |
+| Git | Any | - |
 
 ---
 
 ### Backend Setup
 
 **1. Clone the repository**
+
 ```bash
 git clone https://github.com/Polymorph0us/Bidpulse.git
 cd Bidpulse
 ```
 
 **2. Start the PostgreSQL database**
+
 ```bash
 cd bidpulse-backend
 docker-compose up -d
 ```
 
 This spins up a PostgreSQL 15 instance with:
+
 - **Database**: `bidpulse`
 - **User**: `bidpulse`
 - **Password**: `bidpulse`
@@ -181,6 +191,7 @@ This spins up a PostgreSQL 15 instance with:
 Review `bidpulse-backend/src/main/resources/application.properties` and confirm the DB connection settings match. Flyway will automatically run all migrations on startup (`V1__init.sql`, `V2__wallet_notification_payment.sql`, `V3__seed_data.sql`).
 
 **4. Run the backend**
+
 ```bash
 # Using the Maven wrapper (no local Maven install required)
 ./mvnw spring-boot:run
@@ -191,23 +202,26 @@ mvnw.cmd spring-boot:run
 
 The backend starts on **`http://localhost:8080`** by default.
 
-ðŸ“„ **API Documentation**: Visit `http://localhost:8080/swagger-ui.html` for the full interactive OpenAPI spec.
+> **API Documentation:** Visit `http://localhost:8080/swagger-ui.html` for the full interactive OpenAPI spec.
 
 ---
 
 ### Frontend Setup
 
 **1. Navigate to the frontend**
+
 ```bash
 cd bidpulse-frontend/bidpulse-frontend
 ```
 
 **2. Install dependencies**
+
 ```bash
 npm install
 ```
 
 **3. Start the dev server**
+
 ```bash
 npm run dev
 ```
@@ -216,73 +230,73 @@ The frontend starts on **`http://localhost:5173`** by default.
 
 ---
 
-## ðŸ“ Project Structure
+## Project Structure
 
 ```
 Bidpulse/
-â”œâ”€â”€ bidpulse-backend/                   # Spring Boot Application
-â”‚   â”œâ”€â”€ docker-compose.yml              # PostgreSQL via Docker
-â”‚   â”œâ”€â”€ pom.xml                         # Maven dependencies
-â”‚   â””â”€â”€ src/main/
-â”‚       â”œâ”€â”€ java/com/bidpulse/
-â”‚       â”‚   â”œâ”€â”€ config/                 # Security, WebSocket, CORS config
-â”‚       â”‚   â”œâ”€â”€ controller/             # REST API endpoints
-â”‚       â”‚   â”‚   â”œâ”€â”€ AdminController     # Platform admin operations
-â”‚       â”‚   â”‚   â”œâ”€â”€ AuctionController   # Auction CRUD + bidding
-â”‚       â”‚   â”‚   â”œâ”€â”€ AuthController      # Login, register, refresh tokens
-â”‚       â”‚   â”‚   â”œâ”€â”€ BidController       # Bid submission
-â”‚       â”‚   â”‚   â”œâ”€â”€ UserController      # User profile management
-â”‚       â”‚   â”‚   â””â”€â”€ WalletController    # Wallet deposit/withdraw
-â”‚       â”‚   â”œâ”€â”€ dto/                    # Request/Response data objects
-â”‚       â”‚   â”œâ”€â”€ exception/              # Global exception handling
-â”‚       â”‚   â”œâ”€â”€ model/                  # JPA Entities
-â”‚       â”‚   â”‚   â”œâ”€â”€ User               # Platform users
-â”‚       â”‚   â”‚   â”œâ”€â”€ Auction            # Auction listings
-â”‚       â”‚   â”‚   â”œâ”€â”€ Bid                # Individual bids
-â”‚       â”‚   â”‚   â”œâ”€â”€ Wallet             # User wallets
-â”‚       â”‚   â”‚   â”œâ”€â”€ PaymentTransaction  # Wallet history
-â”‚       â”‚   â”‚   â”œâ”€â”€ Notification       # User notifications
-â”‚       â”‚   â”‚   â”œâ”€â”€ SellerApplication  # Seller approval requests
-â”‚       â”‚   â”‚   â”œâ”€â”€ AuditLog           # System audit trail
-â”‚       â”‚   â”‚   â””â”€â”€ RefreshToken       # JWT refresh token store
-â”‚       â”‚   â”œâ”€â”€ repository/            # Spring Data JPA repositories
-â”‚       â”‚   â”œâ”€â”€ scheduler/             # Scheduled jobs (auction expiry, etc.)
-â”‚       â”‚   â”œâ”€â”€ security/              # JWT filter, UserDetailsService
-â”‚       â”‚   â”œâ”€â”€ service/               # Business logic layer
-â”‚       â”‚   â”œâ”€â”€ util/                  # Utility classes
-â”‚       â”‚   â””â”€â”€ websocket/             # STOMP interceptor, event payloads
-â”‚       â””â”€â”€ resources/
-â”‚           â”œâ”€â”€ application.properties
-â”‚           â””â”€â”€ db/migration/          # Flyway SQL migrations
-â”‚               â”œâ”€â”€ V1__init.sql
-â”‚               â”œâ”€â”€ V2__wallet_notification_payment.sql
-â”‚               â””â”€â”€ V3__seed_data.sql
-â”‚
-â””â”€â”€ bidpulse-frontend/
-    â””â”€â”€ bidpulse-frontend/              # React + Vite Application
-        â”œâ”€â”€ index.html
-        â”œâ”€â”€ vite.config.js
-        â””â”€â”€ src/
-            â”œâ”€â”€ App.jsx                 # Root router configuration
-            â”œâ”€â”€ api/                    # Axios API service layer
-            â”œâ”€â”€ components/
-            â”‚   â”œâ”€â”€ Layout.jsx          # App shell with nav
-            â”‚   â”œâ”€â”€ ProtectedRoute.jsx  # Auth + role guard
-            â”‚   â””â”€â”€ CountdownTimer.jsx  # Live auction countdown
-            â”œâ”€â”€ context/                # React Context (Auth state)
-            â””â”€â”€ pages/
-                â”œâ”€â”€ LoginPage.jsx       # Authentication
-                â”œâ”€â”€ RegisterPage.jsx    # User registration
-                â”œâ”€â”€ DashboardPage.jsx   # Buyer auction browser
-                â”œâ”€â”€ AuctionRoomPage.jsx # Live bidding room (WebSocket)
-                â”œâ”€â”€ SellerDashboard.jsx # Seller listing management
-                â”œâ”€â”€ AdminDashboard.jsx  # Admin control panel
-                â””â”€â”€ WalletPage.jsx      # Wallet management
++-- bidpulse-backend/                   # Spring Boot Application
+|   +-- docker-compose.yml              # PostgreSQL via Docker
+|   +-- pom.xml                         # Maven dependencies
+|   +-- src/main/
+|       +-- java/com/bidpulse/
+|       |   +-- config/                 # Security, WebSocket, CORS config
+|       |   +-- controller/             # REST API endpoints
+|       |   |   +-- AdminController     # Platform admin operations
+|       |   |   +-- AuctionController   # Auction CRUD + bidding
+|       |   |   +-- AuthController      # Login, register, refresh tokens
+|       |   |   +-- BidController       # Bid submission
+|       |   |   +-- UserController      # User profile management
+|       |   |   +-- WalletController    # Wallet deposit/withdraw
+|       |   +-- dto/                    # Request/Response data objects
+|       |   +-- exception/              # Global exception handling
+|       |   +-- model/                  # JPA Entities
+|       |   |   +-- User               # Platform users
+|       |   |   +-- Auction            # Auction listings
+|       |   |   +-- Bid                # Individual bids
+|       |   |   +-- Wallet             # User wallets
+|       |   |   +-- PaymentTransaction  # Wallet history
+|       |   |   +-- Notification       # User notifications
+|       |   |   +-- SellerApplication  # Seller approval requests
+|       |   |   +-- AuditLog           # System audit trail
+|       |   |   +-- RefreshToken       # JWT refresh token store
+|       |   +-- repository/            # Spring Data JPA repositories
+|       |   +-- scheduler/             # Scheduled jobs (auction expiry, etc.)
+|       |   +-- security/              # JWT filter, UserDetailsService
+|       |   +-- service/               # Business logic layer
+|       |   +-- util/                  # Utility classes
+|       |   +-- websocket/             # STOMP interceptor, event payloads
+|       +-- resources/
+|           +-- application.properties
+|           +-- db/migration/          # Flyway SQL migrations
+|               +-- V1__init.sql
+|               +-- V2__wallet_notification_payment.sql
+|               +-- V3__seed_data.sql
+|
++-- bidpulse-frontend/
+    +-- bidpulse-frontend/              # React + Vite Application
+        +-- index.html
+        +-- vite.config.js
+        +-- src/
+            +-- App.jsx                 # Root router configuration
+            +-- api/                    # Axios API service layer
+            +-- components/
+            |   +-- Layout.jsx          # App shell with nav
+            |   +-- ProtectedRoute.jsx  # Auth + role guard
+            |   +-- CountdownTimer.jsx  # Live auction countdown
+            +-- context/                # React Context (Auth state)
+            +-- pages/
+                +-- LoginPage.jsx       # Authentication
+                +-- RegisterPage.jsx    # User registration
+                +-- DashboardPage.jsx   # Buyer auction browser
+                +-- AuctionRoomPage.jsx # Live bidding room (WebSocket)
+                +-- SellerDashboard.jsx # Seller listing management
+                +-- AdminDashboard.jsx  # Admin control panel
+                +-- WalletPage.jsx      # Wallet management
 ```
 
 ---
 
-## ðŸ“¡ API Reference
+## API Reference
 
 Full interactive documentation is available at **`http://localhost:8080/swagger-ui.html`** when the backend is running.
 
@@ -340,44 +354,44 @@ Connect to: `ws://localhost:8080/ws` (via SockJS)
 
 ---
 
-## ðŸ‘¤ User Roles
+## User Roles
 
 ```
-â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
-â”‚                     ADMIN                                â”‚
-â”‚  Full platform access: approve sellers, manage users,    â”‚
-â”‚  view all auctions and audit logs                        â”‚
-â”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤
-â”‚                     SELLER                               â”‚
-â”‚  Create/manage auction listings, track bids,             â”‚
-â”‚  view their wallet balance                               â”‚
-â”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤
-â”‚                     BUYER (default)                      â”‚
-â”‚  Browse auctions, enter rooms, place bids,               â”‚
-â”‚  manage wallet, apply to become a seller                 â”‚
-â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
++----------------------------------------------------------+
+|                        ADMIN                             |
+|  Full platform access: approve sellers, manage users,    |
+|  view all auctions and audit logs                        |
++----------------------------------------------------------+
+|                        SELLER                            |
+|  Create/manage auction listings, track bids,             |
+|  view their wallet balance                               |
++----------------------------------------------------------+
+|                    BUYER (default)                       |
+|  Browse auctions, enter rooms, place bids,               |
+|  manage wallet, apply to become a seller                 |
++----------------------------------------------------------+
 ```
 
 New users register as **BUYER** by default. To become a seller, they submit a `SellerApplication` which an **ADMIN** approves or rejects.
 
 ---
 
-## ðŸ”„ Real-Time Bidding Flow
+## Real-Time Bidding Flow
 
 ```
 Bidder                    Backend                     Other Bidders
-  â”‚                          â”‚                              â”‚
-  â”‚â”€â”€ POST /api/bids â”€â”€â”€â”€â”€â”€â”€â”€â–ºâ”‚                              â”‚
-  â”‚                          â”‚â”€â”€ Validate JWT               â”‚
-  â”‚                          â”‚â”€â”€ Check wallet balance       â”‚
-  â”‚                          â”‚â”€â”€ Acquire optimistic lock    â”‚
-  â”‚                          â”‚â”€â”€ Persist Bid entity         â”‚
-  â”‚                          â”‚â”€â”€ Update auction.highestBid  â”‚
-  â”‚                          â”‚â”€â”€ Broadcast to /topic/       â”‚
-  â”‚â—„â”€ 200 OK â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”‚    auction/{id}              â”‚
-  â”‚                          â”‚â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â–ºâ”‚
-  â”‚                          â”‚   WS Push: new bid event     â”‚
-  â”‚                          â”‚                              â”‚
+  |                          |                              |
+  |-- POST /api/bids ------->|                              |
+  |                          |-- Validate JWT               |
+  |                          |-- Check wallet balance       |
+  |                          |-- Acquire optimistic lock    |
+  |                          |-- Persist Bid entity         |
+  |                          |-- Update auction.highestBid  |
+  |                          |-- Broadcast to /topic/       |
+  |<-- 200 OK ---------------|    auction/{id}              |
+  |                          |----------------------------->|
+  |                          |   WS Push: new bid event     |
+  |                          |                              |
 ```
 
 1. Bidder submits bid via REST (`POST /api/bids`)
@@ -385,38 +399,38 @@ Bidder                    Backend                     Other Bidders
 3. Bid is persisted with optimistic lock to handle concurrency
 4. Auction's `highestBidAmount` and `highestBidderId` are updated
 5. Event is broadcast over STOMP to all subscribers of `/topic/auction/{id}`
-6. Every connected client's UI updates instantly â€” no polling required
+6. Every connected client's UI updates instantly -- no polling required
 
 ---
 
-## ðŸ—„ Database Schema
+## Database Schema
 
 BidPulse uses **Flyway** for schema management. Migrations run automatically on startup.
 
 ```
-users â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
-  id, email, password_hash, role, created_at    â”‚
-       â”‚                                        â”‚
-       â”œâ”€â”€â–º seller_application                  â”‚
-       â”‚      id, user_id, status, notes        â”‚
-       â”‚                                        â”‚
-       â”œâ”€â”€â–º wallet                              â”‚
-       â”‚      id, user_id, balance              â”‚
-       â”‚           â”‚                            â”‚
-       â”‚           â””â”€â”€â–º payment_transaction     â”‚
-       â”‚                  id, wallet_id, type,  â”‚
-       â”‚                  amount, status        â”‚
-       â”‚                                        â”‚
-       â””â”€â”€â–º auction â—„â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
-              id, seller_id, title, description,
-              starting_price, min_increment,
-              reserve_price, start_time, end_time,
-              status, highest_bid_amount,
-              highest_bidder_id, version
-                   â”‚
-                   â””â”€â”€â–º bid
-                          id, auction_id, bidder_id,
-                          amount, status, placed_at
+users -----------------------------------------+
+  id, email, password_hash, role, created_at    |
+       |                                        |
+       +---> seller_application                 |
+       |       id, user_id, status, notes       |
+       |                                        |
+       +---> wallet                             |
+       |       id, user_id, balance             |
+       |           |                            |
+       |           +---> payment_transaction    |
+       |                   id, wallet_id, type, |
+       |                   amount, status       |
+       |                                        |
+       +---> auction <-------------------------+
+               id, seller_id, title, description,
+               starting_price, min_increment,
+               reserve_price, start_time, end_time,
+               status, highest_bid_amount,
+               highest_bidder_id, version
+                    |
+                    +---> bid
+                            id, auction_id, bidder_id,
+                            amount, status, placed_at
 
 notifications
   id, user_id, type, message, is_read, created_at
@@ -430,9 +444,9 @@ refresh_tokens
 
 ---
 
-## ðŸ¤ Contributing
+## Contributing
 
-Contributions are welcome! Here's how to get started:
+Contributions are welcome! Here is how to get started:
 
 1. **Fork** the repository
 2. **Create** a feature branch: `git checkout -b feature/your-feature-name`
@@ -457,9 +471,8 @@ We follow [Conventional Commits](https://www.conventionalcommits.org/):
 
 <div align="center">
 
-**Built with â¤ï¸ using Spring Boot & React**
+**Built with Spring Boot and React**
 
-â­ Star this repo if you find it useful!
+Star this repo if you find it useful!
 
 </div>
-
