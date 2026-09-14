@@ -29,12 +29,21 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException("email already exists");
         }
 
+        String requestedRole = req.getRole();
+        String finalRole = "USER";
+        if ("SELLER".equalsIgnoreCase(requestedRole)) {
+            finalRole = "SELLER";
+        } else if ("ADMIN".equalsIgnoreCase(requestedRole)) {
+            // Safety: cannot register as ADMIN directly
+            throw new IllegalArgumentException("Unauthorized role requested");
+        }
+
         User u = User.builder()
                 .email(req.getEmail())
                 .name(req.getName())
                 // 2. Use the encoder here
                 .passwordHash(passwordEncoder.encode(req.getPassword()))
-                .roles(java.util.Set.of("USER"))
+                .roles(java.util.Set.of(finalRole))
                 .build();
         u = userRepository.save(u);
 

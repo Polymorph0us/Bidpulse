@@ -10,4 +10,9 @@ public class HealthController {
     public ResponseEntity<String> health() {
         return ResponseEntity.ok("ok");
     }
+
+    @GetMapping("/ping")
+    public ResponseEntity<String> ping() {
+        return ResponseEntity.ok("pong");
+    }
 }
