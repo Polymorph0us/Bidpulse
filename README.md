@@ -93,26 +93,7 @@ Whether you're a buyer chasing the thrill of a last-second win or a seller looki
 
 ## Architecture
 
-```
-+------------------------------------------------------------------+
-|                        BidPulse Platform                         |
-+---------------------------+--------------------------------------+
-|      Frontend (React)     |        Backend (Spring Boot)         |
-|  +--------------------+   |   +------------------------------+  |
-|  |  React 19 + Vite   |   |   |  Spring Boot 3.5 / Java 17  |  |
-|  |  React Router v7   |<--+-->|  Spring Security + JWT       |  |
-|  |  TailwindCSS v4    |   |   |  Spring Data JPA             |  |
-|  |  Axios (HTTP)      |   |   |  SpringDoc OpenAPI           |  |
-|  |  STOMP/SockJS WS   |<--+-->|  Spring WebSocket (STOMP)   |  |
-|  |  React Toastify    |   |   |  Flyway Migrations           |  |
-|  +--------------------+   |   +------------+-----------------+  |
-|                           |                |                     |
-|                           |   +------------v-----------------+  |
-|                           |   |     PostgreSQL 15            |  |
-|                           |   |   (Docker Compose)           |  |
-|                           |   +------------------------------+  |
-+---------------------------+--------------------------------------+
-```
+![Architecture Diagram](docs/images/architecture_diagram_1789400579871.jpg)
 
 ### Key Design Decisions
 
@@ -356,21 +337,7 @@ Connect to: `ws://localhost:8080/ws` (via SockJS)
 
 ## User Roles
 
-```
-+----------------------------------------------------------+
-|                        ADMIN                             |
-|  Full platform access: approve sellers, manage users,    |
-|  view all auctions and audit logs                        |
-+----------------------------------------------------------+
-|                        SELLER                            |
-|  Create/manage auction listings, track bids,             |
-|  view their wallet balance                               |
-+----------------------------------------------------------+
-|                    BUYER (default)                       |
-|  Browse auctions, enter rooms, place bids,               |
-|  manage wallet, apply to become a seller                 |
-+----------------------------------------------------------+
-```
+![User Roles Diagram](docs/images/user_roles_diagram_1789400595379.jpg)
 
 New users register as **BUYER** by default. To become a seller, they submit a `SellerApplication` which an **ADMIN** approves or rejects.
 
@@ -378,21 +345,7 @@ New users register as **BUYER** by default. To become a seller, they submit a `S
 
 ## Real-Time Bidding Flow
 
-```
-Bidder                    Backend                     Other Bidders
-  |                          |                              |
-  |-- POST /api/bids ------->|                              |
-  |                          |-- Validate JWT               |
-  |                          |-- Check wallet balance       |
-  |                          |-- Acquire optimistic lock    |
-  |                          |-- Persist Bid entity         |
-  |                          |-- Update auction.highestBid  |
-  |                          |-- Broadcast to /topic/       |
-  |<-- 200 OK ---------------|    auction/{id}              |
-  |                          |----------------------------->|
-  |                          |   WS Push: new bid event     |
-  |                          |                              |
-```
+![Real-Time Bidding Flow](docs/images/bidding_flow_diagram_1789400608571.jpg)
 
 1. Bidder submits bid via REST (`POST /api/bids`)
 2. Backend validates auth, wallet balance, and minimum increment
@@ -407,40 +360,7 @@ Bidder                    Backend                     Other Bidders
 
 BidPulse uses **Flyway** for schema management. Migrations run automatically on startup.
 
-```
-users -----------------------------------------+
-  id, email, password_hash, role, created_at    |
-       |                                        |
-       +---> seller_application                 |
-       |       id, user_id, status, notes       |
-       |                                        |
-       +---> wallet                             |
-       |       id, user_id, balance             |
-       |           |                            |
-       |           +---> payment_transaction    |
-       |                   id, wallet_id, type, |
-       |                   amount, status       |
-       |                                        |
-       +---> auction <-------------------------+
-               id, seller_id, title, description,
-               starting_price, min_increment,
-               reserve_price, start_time, end_time,
-               status, highest_bid_amount,
-               highest_bidder_id, version
-                    |
-                    +---> bid
-                            id, auction_id, bidder_id,
-                            amount, status, placed_at
-
-notifications
-  id, user_id, type, message, is_read, created_at
-
-audit_log
-  id, action, performed_by, target_id, timestamp
-
-refresh_tokens
-  id, token, user_id, expiry_date
-```
+![Database Schema Diagram](docs/images/database_schema_diagram_1789400625540.jpg)
 
 ---
 
