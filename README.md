@@ -93,7 +93,11 @@ Whether you're a buyer chasing the thrill of a last-second win or a seller looki
 
 ## Architecture
 
-![Architecture Diagram](docs/images/architecture_diagram_1789400579871.jpg)
+<img width="1320" height="1650" alt="auction-platform-architecture-dark (1)" src="https://github.com/user-attachments/assets/a336d917-e5e6-4b67-8e42-b17a83691300" />
+
+
+
+
 
 ### Key Design Decisions
 
@@ -337,7 +341,8 @@ Connect to: `ws://localhost:8080/ws` (via SockJS)
 
 ## User Roles
 
-![User Roles Diagram](docs/images/user_roles_diagram_1789400595379.jpg)
+<img width="1750" height="950" alt="rbac-flow-dark" src="https://github.com/user-attachments/assets/40de1ee1-92a0-4b16-860e-95d159af6ec5" />
+
 
 New users register as **BUYER** by default. To become a seller, they submit a `SellerApplication` which an **ADMIN** approves or rejects.
 
@@ -345,7 +350,8 @@ New users register as **BUYER** by default. To become a seller, they submit a `S
 
 ## Real-Time Bidding Flow
 
-![Real-Time Bidding Flow](docs/images/bidding_flow_diagram_1789400608571.jpg)
+<img width="1680" height="1100" alt="bid-sequence-dark" src="https://github.com/user-attachments/assets/65d901ca-7a44-4743-af1b-a061e0e523a6" />
+
 
 1. Bidder submits bid via REST (`POST /api/bids`)
 2. Backend validates auth, wallet balance, and minimum increment
@@ -360,7 +366,8 @@ New users register as **BUYER** by default. To become a seller, they submit a `S
 
 BidPulse uses **Flyway** for schema management. Migrations run automatically on startup.
 
-![Database Schema Diagram](docs/images/database_schema_diagram_1789400625540.jpg)
+<img width="1760" height="1220" alt="auction-erd-dark" src="https://github.com/user-attachments/assets/e83d5b2d-79bd-4a95-a97b-533d70d6701a" />
+
 
 ---
 
