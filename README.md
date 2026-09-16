@@ -93,78 +93,11 @@ Whether you're a buyer chasing the thrill of a last-second win or a seller looki
 
 ## Architecture
 
-```mermaid
-flowchart TB
-    subgraph CLIENT["Frontend — React 19 + Vite"]
-        UI["React UI"]
-        ROUTER["React Router"]
-        API["Axios API Layer"]
-        WS["STOMP / SockJS Client"]
+<img width="1320" height="1650" alt="auction-platform-architecture-dark (1)" src="https://github.com/user-attachments/assets/a336d917-e5e6-4b67-8e42-b17a83691300" />
 
-        UI --> ROUTER
-        ROUTER --> API
-        UI --> WS
-    end
 
-    subgraph BACKEND["Backend — Spring Boot 3.5"]
-        SECURITY["Spring Security"]
-        JWT["JWT Authentication"]
-        CONTROLLERS["REST Controllers"]
 
-        subgraph SERVICES["Business Logic"]
-            AUTH["Auth Service"]
-            AUCTION["Auction Service"]
-            BID["Bid Service"]
-            WALLET["Wallet Service"]
-            ADMIN["Admin Service"]
-            USER["User Service"]
-        end
 
-        subgraph REALTIME["Real-Time Layer"]
-            WS_SERVER["Spring WebSocket"]
-            STOMP["STOMP Broker"]
-            INTERCEPTOR["WebSocket Auth Interceptor"]
-        end
-
-        REPOSITORIES["Spring Data JPA Repositories"]
-        SCHEDULER["Auction Scheduler"]
-    end
-
-    subgraph DATA["Persistence"]
-        FLYWAY["Flyway Migrations"]
-        DB[("PostgreSQL 15")]
-    end
-
-    API -->|"HTTP / REST"| SECURITY
-    SECURITY --> JWT
-    SECURITY --> CONTROLLERS
-
-    CONTROLLERS --> AUTH
-    CONTROLLERS --> AUCTION
-    CONTROLLERS --> BID
-    CONTROLLERS --> WALLET
-    CONTROLLERS --> ADMIN
-    CONTROLLERS --> USER
-
-    WS -->|"WebSocket"| INTERCEPTOR
-    INTERCEPTOR --> WS_SERVER
-    WS_SERVER --> STOMP
-    STOMP --> BID
-
-    AUTH --> REPOSITORIES
-    AUCTION --> REPOSITORIES
-    BID --> REPOSITORIES
-    WALLET --> REPOSITORIES
-    ADMIN --> REPOSITORIES
-    USER --> REPOSITORIES
-
-    SCHEDULER --> AUCTION
-    REPOSITORIES --> DB
-    FLYWAY --> DB
-
-    BID -->|"Bid Event"| STOMP
-    STOMP -->|"Live Bid Update"| WS
-```
 
 ### Key Design Decisions
 
@@ -408,52 +341,8 @@ Connect to: `ws://localhost:8080/ws` (via SockJS)
 
 ## User Roles
 
-```mermaid
-flowchart TD
-    USER["User"]
-    REGISTER["Register"]
-    BUYER["BUYER — Default Role"]
-    APPLICATION["Seller Application"]
-    ADMIN["ADMIN"]
-    SELLER["SELLER"]
+<img width="1750" height="950" alt="rbac-flow-dark" src="https://github.com/user-attachments/assets/40de1ee1-92a0-4b16-860e-95d159af6ec5" />
 
-    USER --> REGISTER
-    REGISTER --> BUYER
-    BUYER -->|"Apply to become seller"| APPLICATION
-    APPLICATION -->|"Approve"| ADMIN
-    ADMIN -->|"Promotes"| SELLER
-    APPLICATION -->|"Reject"| BUYER
-
-    subgraph BUYER_CAPS["BUYER Capabilities"]
-        B1["Browse Auctions"]
-        B2["Place Bids"]
-        B3["Manage Wallet"]
-    end
-
-    subgraph SELLER_CAPS["SELLER Capabilities"]
-        S1["Create Auctions"]
-        S2["Manage Listings"]
-        S3["Monitor Bids"]
-    end
-
-    subgraph ADMIN_CAPS["ADMIN Capabilities"]
-        A1["Manage Users"]
-        A2["Manage Auctions"]
-        A3["Approve / Reject Applications"]
-        A4["Platform Oversight"]
-    end
-
-    BUYER --> B1
-    BUYER --> B2
-    BUYER --> B3
-    SELLER --> S1
-    SELLER --> S2
-    SELLER --> S3
-    ADMIN --> A1
-    ADMIN --> A2
-    ADMIN --> A3
-    ADMIN --> A4
-```
 
 New users register as **BUYER** by default. To become a seller, they submit a `SellerApplication` which an **ADMIN** approves or rejects.
 
@@ -461,39 +350,8 @@ New users register as **BUYER** by default. To become a seller, they submit a `S
 
 ## Real-Time Bidding Flow
 
-```mermaid
-sequenceDiagram
-    autonumber
-    participant B as Bidder
-    participant FE as React Client
-    participant API as Spring Boot REST API
-    participant AUTH as Security / JWT
-    participant BID as Bid Service
-    participant DB as PostgreSQL
-    participant WS as STOMP / WebSocket
-    participant C as Other Connected Clients
+<img width="1680" height="1100" alt="bid-sequence-dark" src="https://github.com/user-attachments/assets/65d901ca-7a44-4743-af1b-a061e0e523a6" />
 
-    B->>FE: Enter bid amount
-    FE->>API: POST /api/bids
-    API->>AUTH: Validate JWT + BUYER role
-    AUTH-->>API: Authorized
-    API->>BID: Submit bid
-    BID->>BID: Validate auction state
-    BID->>BID: Validate minimum increment
-    BID->>BID: Validate wallet balance
-    BID->>DB: Reserve / escrow funds
-    BID->>DB: Persist bid
-    Note over DB: Optimistic locking prevents concurrent bid conflicts
-    BID->>DB: Update highestBidAmount
-    BID->>DB: Update highestBidderId
-    BID->>WS: Publish BidEvent
-    WS-->>FE: /topic/auction/{id}
-    WS-->>C: /topic/auction/{id}
-    FE->>FE: Update bid feed
-    FE->>FE: Update highest bid
-    FE->>FE: Update countdown / UI
-    C->>C: Update live auction UI
-```
 
 1. Bidder submits bid via REST (`POST /api/bids`)
 2. Backend validates auth, wallet balance, and minimum increment
@@ -508,102 +366,8 @@ sequenceDiagram
 
 BidPulse uses **Flyway** for schema management. Migrations run automatically on startup.
 
-```mermaid
-erDiagram
-    USER {
-        bigint id PK
-        string username
-        string email
-        string password
-        string role
-        datetime created_at
-    }
+<img width="1760" height="1220" alt="auction-erd-dark" src="https://github.com/user-attachments/assets/e83d5b2d-79bd-4a95-a97b-533d70d6701a" />
 
-    AUCTION {
-        bigint id PK
-        bigint seller_id FK
-        string title
-        string description
-        decimal starting_price
-        decimal reserve_price
-        decimal minimum_increment
-        decimal highest_bid_amount
-        bigint highest_bidder_id FK
-        string status
-        datetime start_time
-        datetime end_time
-        integer version
-    }
-
-    BID {
-        bigint id PK
-        bigint auction_id FK
-        bigint bidder_id FK
-        decimal amount
-        datetime created_at
-    }
-
-    WALLET {
-        bigint id PK
-        bigint user_id FK
-        decimal balance
-    }
-
-    PAYMENT_TRANSACTION {
-        bigint id PK
-        bigint wallet_id FK
-        decimal amount
-        string type
-        string status
-        datetime created_at
-    }
-
-    NOTIFICATION {
-        bigint id PK
-        bigint user_id FK
-        string type
-        string message
-        boolean read
-        datetime created_at
-    }
-
-    SELLER_APPLICATION {
-        bigint id PK
-        bigint user_id FK
-        string status
-        datetime created_at
-        datetime reviewed_at
-    }
-
-    AUDIT_LOG {
-        bigint id PK
-        bigint user_id FK
-        string action
-        string entity_type
-        bigint entity_id
-        datetime created_at
-    }
-
-    REFRESH_TOKEN {
-        bigint id PK
-        bigint user_id FK
-        string token
-        datetime expiry
-    }
-
-    USER ||--o{ AUCTION : creates
-    USER ||--o{ BID : places
-    USER ||--|| WALLET : owns
-    USER ||--o{ NOTIFICATION : receives
-    USER ||--o{ SELLER_APPLICATION : submits
-    USER ||--o{ AUDIT_LOG : generates
-    USER ||--o{ REFRESH_TOKEN : owns
-
-    AUCTION ||--o{ BID : contains
-    AUCTION }o--|| USER : highest_bidder
-
-    WALLET ||--o{ PAYMENT_TRANSACTION : records
-```
 
 ---
 
