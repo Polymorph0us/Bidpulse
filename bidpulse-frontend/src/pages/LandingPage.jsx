@@ -1,7 +1,20 @@
 import { useNavigate, Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 export default function LandingPage() {
     const navigate = useNavigate();
+    const { user, loginAsDemo } = useAuth();
+
+    const handleInstantPreview = () => {
+        loginAsDemo('USER');
+        navigate('/dashboard');
+    };
+
+    const handleEnterDashboard = () => {
+        if (user?.roles?.includes('ADMIN')) navigate('/admin');
+        else if (user?.roles?.includes('SELLER')) navigate('/seller');
+        else navigate('/dashboard');
+    };
 
     return (
         <div className="min-h-screen relative overflow-hidden bg-black text-white selection:bg-neonCyan/30">
@@ -20,19 +33,33 @@ export default function LandingPage() {
                     </div>
                     <span className="text-2xl font-black tracking-tighter uppercase font-display">BidPulse</span>
                 </div>
-                <div className="flex items-center gap-6">
-                    <Link to="/login" className="text-sm font-bold text-gray-400 hover:text-white transition-colors uppercase tracking-widest">Login</Link>
-                    <button 
-                        onClick={() => navigate('/register')}
-                        className="btn-primary py-2 px-6 text-sm"
-                    >
-                        GET AUTHORIZED
-                    </button>
+                <div className="flex items-center gap-4">
+                    {user ? (
+                        <div className="flex items-center gap-3">
+                            <span className="hidden sm:inline text-xs text-gray-400 font-mono">OPERATIVE: <strong className="text-white">{user.name}</strong></span>
+                            <button 
+                                onClick={handleEnterDashboard}
+                                className="btn-primary py-2 px-6 text-sm"
+                            >
+                                GO TO COMMAND CENTER →
+                            </button>
+                        </div>
+                    ) : (
+                        <>
+                            <Link to="/login" className="text-sm font-bold text-gray-400 hover:text-white transition-colors uppercase tracking-widest">Login</Link>
+                            <button 
+                                onClick={() => navigate('/register')}
+                                className="btn-primary py-2 px-6 text-sm"
+                            >
+                                GET AUTHORIZED
+                            </button>
+                        </>
+                    )}
                 </div>
             </nav>
 
             {/* Hero Section */}
-            <main className="relative z-10 max-w-7xl mx-auto px-6 pt-20 pb-32 flex flex-col items-center text-center">
+            <main className="relative z-10 max-w-7xl mx-auto px-6 pt-16 pb-32 flex flex-col items-center text-center">
                 <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 mb-8 backdrop-blur-md">
                     <span className="relative flex h-2 w-2">
                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-neonCyan opacity-75"></span>
@@ -48,38 +75,56 @@ export default function LandingPage() {
                     </span>
                 </h1>
 
-                <p className="max-w-2xl text-gray-400 text-lg md:text-xl leading-relaxed mb-12 font-medium">
+                <p className="max-w-2xl text-gray-400 text-lg md:text-xl leading-relaxed mb-10 font-medium">
                     Access the world's most exclusive digital marketplace. Real-time updates, 
                     secure transactions, and high-stakes auctions powered by next-gen infrastructure.
                 </p>
 
-                <div className="flex flex-col sm:flex-row gap-4 items-center justify-center">
-                    <button 
-                        onClick={() => navigate('/register')}
-                        className="btn-primary text-lg px-12 py-5 group"
-                    >
-                        START INITIALIZATION
-                        <span className="inline-block ml-2 transition-transform group-hover:translate-x-1">→</span>
-                    </button>
-                    <button 
-                        onClick={() => navigate('/login')}
-                        className="btn-outline border-white/10 hover:border-white/20 text-white text-lg px-12 py-5"
-                    >
-                        ACCESS TERMINAL
-                    </button>
+                <div className="flex flex-col sm:flex-row gap-4 items-center justify-center w-full max-w-md sm:max-w-none">
+                    {user ? (
+                        <button 
+                            onClick={handleEnterDashboard}
+                            className="btn-primary text-lg px-12 py-5 group w-full sm:w-auto shadow-[0_0_30px_rgba(139,92,246,0.5)]"
+                        >
+                            ENTER COMMAND CENTER
+                            <span className="inline-block ml-2 transition-transform group-hover:translate-x-1">→</span>
+                        </button>
+                    ) : (
+                        <>
+                            <button 
+                                onClick={handleInstantPreview}
+                                className="btn-primary text-lg px-10 py-5 group w-full sm:w-auto shadow-[0_0_30px_rgba(6,182,212,0.4)]"
+                            >
+                                ⚡ INSTANT GUEST PREVIEW
+                                <span className="inline-block ml-2 transition-transform group-hover:translate-x-1">→</span>
+                            </button>
+                            <button 
+                                onClick={() => navigate('/login')}
+                                className="btn-outline border-white/15 hover:border-white/30 text-white text-lg px-8 py-5 w-full sm:w-auto"
+                            >
+                                ACCESS TERMINAL
+                            </button>
+                            <button 
+                                onClick={() => navigate('/register')}
+                                className="text-xs font-bold text-gray-400 hover:text-white uppercase tracking-widest py-3 px-4 sm:hidden"
+                            >
+                                Or Create New Account
+                            </button>
+                        </>
+                    )}
                 </div>
 
                 {/* Grid Preview / Stats */}
-                <div className="mt-32 grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-5xl">
-                    <div className="glass-card p-8 border-t-2 border-t-neonCyan">
+                <div className="mt-28 grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-5xl">
+                    <div className="glass-card p-8 border-t-2 border-t-neonCyan text-left">
                         <div className="text-3xl font-black text-white mb-2 font-display">99.9%</div>
                         <div className="text-xs font-bold text-gray-500 uppercase tracking-widest">Uptime Guaranteed</div>
                     </div>
-                    <div className="glass-card p-8 border-t-2 border-t-neonPurple">
+                    <div className="glass-card p-8 border-t-2 border-t-neonPurple text-left">
                         <div className="text-3xl font-black text-white mb-2 font-display">$2.4M+</div>
                         <div className="text-xs font-bold text-gray-500 uppercase tracking-widest">Total Trade Vol</div>
                     </div>
-                    <div className="glass-card p-8 border-t-2 border-t-emerald-500">
+                    <div className="glass-card p-8 border-t-2 border-t-emerald-500 text-left">
                         <div className="text-3xl font-black text-white mb-2 font-display">15ms</div>
                         <div className="text-xs font-bold text-gray-500 uppercase tracking-widest">Latency Threshold</div>
                     </div>

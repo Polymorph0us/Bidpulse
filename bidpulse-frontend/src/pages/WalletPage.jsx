@@ -46,8 +46,7 @@ export default function WalletPage() {
           <p className="text-gray-400 text-lg">Manage your assets and buying power.</p>
         </div>
         
-        {/* Neon Money Card */}
-        <div className="glass-card p-10 bg-gradient-to-br from-violet-900/40 to-fuchsia-900/20 border-violet-500/30 shadow-[0_0_40px_rgba(139,92,246,0.15)] relative overflow-hidden">
+          <div className="glass-card p-10 bg-gradient-to-br from-violet-900/40 to-fuchsia-900/20 border-violet-500/30 shadow-[0_0_40px_rgba(139,92,246,0.15)] relative overflow-hidden">
           {/* Decorative glowing orb */}
           <div className="absolute top-0 right-0 w-64 h-64 bg-fuchsia-500/20 rounded-full blur-[80px] -mr-20 -mt-20"></div>
           
@@ -57,6 +56,13 @@ export default function WalletPage() {
               <span className="text-violet-400">$</span>{balance.toFixed(2)}
             </h2>
             
+            {balance === 0 && (
+              <div className="inline-flex items-center gap-3 bg-black/40 border border-violet-500/30 px-4 py-2 rounded-xl mt-4">
+                <span className="w-2.5 h-2.5 rounded-full bg-violet-400 shadow-[0_0_10px_#a78bfa] animate-pulse"></span> 
+                <span className="text-violet-200 font-medium">Vault is empty. Add funds to participate in live markets.</span>
+              </div>
+            )}
+
             {reserved > 0 && (
               <div className="inline-flex items-center gap-3 bg-black/40 border border-amber-500/30 px-4 py-2 rounded-xl mt-4">
                 <span className="w-2.5 h-2.5 rounded-full bg-amber-400 shadow-[0_0_10px_#fbbf24] animate-pulse"></span> 

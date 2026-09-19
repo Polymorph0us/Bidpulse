@@ -20,8 +20,10 @@ export default function AuctionRoomPage() {
   const [currentBid, setCurrentBid] = useState(0);
   const [bidAmount, setBidAmount] = useState('');
   const [logs, setLogs] = useState([]);
-  const [liveUsers, setLiveUsers] = useState(1); 
+  const [liveUsers, setLiveUsers] = useState(Math.floor(Math.random() * 50) + 12);
   const [isBidding, setIsBidding] = useState(false);
+  const [bidFlash, setBidFlash] = useState(false);
+  const [bidCooldown, setBidCooldown] = useState(false);
 
   useEffect(() => {
     apiClient.get(`/auctions/${id}`)
@@ -48,7 +50,15 @@ export default function AuctionRoomPage() {
 
         if (newBidAmount) {
           setCurrentBid(newBidAmount);
-          setLogs(prev => [`[RADAR] Incoming bid detected: $${newBidAmount.toLocaleString()}`, ...prev]);
+          setLogs(prev => {
+            // Keep only the last 50 logs to prevent memory leaks and DOM bloat
+            const newLogs = [`[RADAR] Incoming bid detected: $${newBidAmount.toLocaleString()}`, ...prev];
+            return newLogs.slice(0, 50);
+          });
+
+          // Trigger visual flash
+          setBidFlash(true);
+          setTimeout(() => setBidFlash(false), 500);
 
           const currentUser = userRef.current;
           
@@ -68,7 +78,14 @@ export default function AuctionRoomPage() {
 
   const handlePlaceBid = async (e) => {
     e.preventDefault();
+    if (bidCooldown) {
+      toast.warn("Anti-spam active. Please wait a second before bidding again.");
+      return;
+    }
+    
     setIsBidding(true);
+    setBidCooldown(true);
+    
     try {
       await apiClient.post(`/auctions/${id}/bids`, { amount: Number(bidAmount) });
       setBidAmount('');
@@ -76,6 +93,7 @@ export default function AuctionRoomPage() {
       toast.error(err.response?.data?.message || "Bid rejected. Insufficient funds or bid too low.");
     } finally {
       setIsBidding(false);
+      setTimeout(() => setBidCooldown(false), 1500); // 1.5 second cooldown
     }
   };
 
@@ -137,7 +155,7 @@ export default function AuctionRoomPage() {
             <div className="absolute -right-10 -top-10 w-32 h-32 bg-emerald-500/20 rounded-full blur-[40px] pointer-events-none"></div>
             
             <p className="text-emerald-400 text-xs font-bold uppercase tracking-[0.2em] mb-2">Live Highest Bid</p>
-            <h2 className="text-5xl font-black text-white mb-8 drop-shadow-[0_0_15px_rgba(16,185,129,0.3)]">
+            <h2 className={`text-5xl font-black mb-8 transition-colors duration-300 ${bidFlash ? 'text-white drop-shadow-[0_0_30px_rgba(255,255,255,0.8)]' : 'text-white drop-shadow-[0_0_15px_rgba(16,185,129,0.3)]'}`}>
               <span className="text-emerald-500 mr-1">$</span>{currentBid.toLocaleString()}
             </h2>
 
@@ -157,8 +175,16 @@ export default function AuctionRoomPage() {
                     className="input-field pl-8 font-mono text-xl py-4 bg-black/60 focus:border-emerald-500 focus:ring-emerald-500"
                   />
                 </div>
-                <button type="submit" className="w-full btn-success py-4 text-lg" disabled={isBidding}>
-                  {isBidding ? 'TRANSMITTING...' : 'DROP BID ⚡'}
+                
+                {/* Quick Bid Buttons */}
+                <div className="flex gap-2">
+                  <button type="button" onClick={() => setBidAmount(currentBid + 5)} className="flex-1 bg-white/5 hover:bg-emerald-500/20 text-emerald-300 py-2 rounded-lg font-mono text-sm border border-emerald-500/20 transition-colors">+$5</button>
+                  <button type="button" onClick={() => setBidAmount(currentBid + 25)} className="flex-1 bg-white/5 hover:bg-emerald-500/20 text-emerald-300 py-2 rounded-lg font-mono text-sm border border-emerald-500/20 transition-colors">+$25</button>
+                  <button type="button" onClick={() => setBidAmount(currentBid + 100)} className="flex-1 bg-white/5 hover:bg-emerald-500/20 text-emerald-300 py-2 rounded-lg font-mono text-sm border border-emerald-500/20 transition-colors">+$100</button>
+                </div>
+
+                <button type="submit" className={`w-full py-4 text-lg mt-2 ${bidCooldown ? 'bg-gray-600 text-gray-400 cursor-not-allowed rounded-xl font-bold uppercase' : 'btn-success'}`} disabled={isBidding || bidCooldown || bidAmount < (currentBid + (auction.minIncrement || 1))}>
+                  {isBidding ? 'TRANSMITTING...' : bidCooldown ? 'SYSTEM COOLING...' : 'DROP BID ⚡'}
                 </button>
                 <p className="text-center text-xs text-gray-500 mt-2 font-mono">Min increment: ${auction.minIncrement?.toFixed(2) || '1.00'}</p>
               </form>

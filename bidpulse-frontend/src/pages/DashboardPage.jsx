@@ -1,30 +1,31 @@
-import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { useQuery } from '@tanstack/react-query';
 import apiClient from '../api/axiosConfig';
 import { useAuth } from '../context/AuthContext';
 import CountdownTimer from '../components/CountdownTimer';
 import Layout from '../components/Layout';
+import SkeletonCard from '../components/SkeletonCard';
 
 export default function DashboardPage() {
-  const [auctions, setAuctions] = useState([]);
   const navigate = useNavigate();
   const { user } = useAuth();
 
-  const fetchAuctions = async () => {
-    try {
+  const { data: auctions = [], isLoading } = useQuery({
+    queryKey: ['auctions'],
+    queryFn: async () => {
       const response = await apiClient.get('/auctions');
-      setAuctions(response.data.content || response.data);
-    } catch (error) {
-      if (error.response?.status === 401) navigate('/login');
+      return response.data.content || response.data;
+    },
+    refetchInterval: 15000, // Poll every 15 seconds instead of 5s
+    retry: (failureCount, error) => {
+      if (error.response?.status === 401) {
+        navigate('/login');
+        return false;
+      }
+      return failureCount < 3;
     }
-  };
-
-  useEffect(() => {
-    fetchAuctions();
-    const intervalId = setInterval(fetchAuctions, 5000);
-    return () => clearInterval(intervalId);
-  }, []);
+  });
 
   const handleApplySeller = async () => {
     try {
@@ -51,19 +52,28 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-        {auctions.map((auction) => (
-          <article 
-            key={auction.id} 
-            className="glass-card cursor-pointer group"
-            onClick={() => navigate(`/auction/${auction.id}`)}
-          >
-            {/* Aspect-Ratio Locked Image */}
-            <div className="relative aspect-[4/3] bg-black/50 overflow-hidden border-b border-white/5">
-              {auction.imageData ? (
-                 <img src={auction.imageData} alt={auction.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
-              ) : (
-                 <div className="w-full h-full flex items-center justify-center text-5xl opacity-30">📦</div>
-              )}
+        {isLoading ? (
+          Array.from({ length: 8 }).map((_, idx) => <SkeletonCard key={idx} />)
+        ) : auctions.length === 0 ? (
+          <div className="col-span-full py-20 flex flex-col items-center justify-center text-center glass-card border-t-4 border-t-cyan-500">
+            <span className="text-6xl mb-6 opacity-40">🚀</span>
+            <h3 className="text-2xl font-black text-white mb-2">No Active Markets</h3>
+            <p className="text-gray-400 text-lg">There are currently no assets available for bidding. Check back soon.</p>
+          </div>
+        ) : (
+          auctions.map((auction) => (
+            <article 
+              key={auction.id} 
+              className="glass-card cursor-pointer group"
+              onClick={() => navigate(`/auction/${auction.id}`)}
+            >
+              {/* Aspect-Ratio Locked Image */}
+              <div className="relative aspect-[4/3] bg-black/50 overflow-hidden border-b border-white/5">
+                {auction.imageData ? (
+                   <img src={auction.imageData} alt={auction.title} loading="lazy" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                ) : (
+                   <div className="w-full h-full flex items-center justify-center text-5xl opacity-30">🖼️</div>
+                )}
               
               {/* Neon Glow Overlay on Image */}
               <div className="absolute inset-0 bg-gradient-to-t from-dark to-transparent opacity-60"></div>
@@ -104,7 +114,7 @@ export default function DashboardPage() {
               )}
             </div>
           </article>
-        ))}
+        )))}
       </div>
     </Layout>
   );
